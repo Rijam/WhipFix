@@ -1,0 +1,3 @@
+displayName = Whip Fix
+author = Cyril
+version = 0.1

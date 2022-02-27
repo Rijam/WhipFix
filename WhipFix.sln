@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhipFix", "WhipFix.csproj", "{CF25BF57-A89A-485A-AE03-A8DC8304B6AD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CF25BF57-A89A-485A-AE03-A8DC8304B6AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF25BF57-A89A-485A-AE03-A8DC8304B6AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF25BF57-A89A-485A-AE03-A8DC8304B6AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF25BF57-A89A-485A-AE03-A8DC8304B6AD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {35330A8A-1975-4A7E-8F93-13B5F8A54792}
+	EndGlobalSection
+EndGlobal
