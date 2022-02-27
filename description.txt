@@ -2,3 +2,4 @@
 It should behave like the whips in vanilla now.
 修复了1.4tML鞭子的一些问题，比如双判、切鞭无效
 现在它应该和原版一样
+Github:https://github.com/Crapsky233/WhipFix
