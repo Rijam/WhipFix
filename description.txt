@@ -1,5 +1,5 @@
-﻿It fixed the issue happened to whips in tModLoader 1.4 by a bit IL editing.
+﻿Fixed some problems with 1.4 tModLoader whips and spears under autoswing, such as double whips and invisible spear
 It should behave like the whips in vanilla now.
-修复了1.4tML鞭子的一些问题，比如双判、切鞭无效
+修复了1.4 tModLoader鞭子和长矛在自动挥舞下的一些问题，比如双判、切鞭无效和隐形长矛
 现在它应该和原版一样
 Github:https://github.com/Crapsky233/WhipFix
