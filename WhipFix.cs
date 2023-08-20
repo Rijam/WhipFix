@@ -1,21 +1,87 @@
-using Mono.Cecil.Cil;
+Ôªøusing Mono.Cecil.Cil;
 using MonoMod.Cil;
 using System;
 using Terraria;
 using Terraria.ModLoader;
-
 namespace WhipFix
 {
     public class WhipFix : Mod
     {
-        public override void Load() {
-            base.Load();
-            // ≈–∂œ¥˙¬Î∂º «“ª—˘µƒ£¨÷±Ω””√Õ¨“ª∏ˆIL±‡º≠
-            IL.Terraria.Projectile.AI_165_Whip += WhipPatch;
-            IL.Terraria.Projectile.AI_019_Spears += WhipPatch;
+        /*
+        Ok so the vanilla code pre 1.4.4 was
+
+        if (this.ai[0] >= timeToFlyOut || player.itemAnimation == 0)
+        {
+            this.Kill();
+            return;
         }
 
-        // tML¥Û∏≈ «itemAnimationŒ™0∫Õ1 ±∏˜≈–∂œ¡À“ª¥Œ≥ˆ ÷£¨∂™¡À¡Ω∏ˆ±ﬁ◊”£¨∏’∫√ π‘À––µΩSmartSelectLookupµƒ ±∫Ú√ª”–itemAnimationŒ™0µƒø’µ≤∆⁄¡À£¨«–±ﬁ“≤≤ªƒ‹”√¡À
+        but after 1.4.4 it was changed to 
+
+        if (this.ai[0] >= timeToFlyOut)
+        {
+            this.Kill();
+            return;
+        }
+
+        and the player.itemAnimation == 0 is what this IL edit relied on.
+
+        The IL edit was: if player.itemAnimation == 1, then set the player.itemAnimation = 0.
+            That caused the whip to be killed which allowed you to swap to another whip.
+
+        Instead of redoing the IL edit, I just made a detour which sets player.itemAnimation = 0 if player.itemAnimation == 1 before any whip code runs.
+        So the vanilla code looks like:
+
+            private void AI_165_Whip()
+            {
+                if (Main.player[owner].itemAnimation == 1) {
+                    Main.player[owner].itemAnimation = 0;
+                }
+
+                Player player = Main.player[owner];
+                rotation = velocity.ToRotation() + (float)Math.PI / 2f;
+                ai[0] += 1f;
+                GetWhipSettings(this, out var timeToFlyOut, out var _, out var _);
+                base.Center = Main.GetPlayerArmPosition(this) + velocity * (ai[0] - 1f);
+                spriteDirection = ((!(Vector2.Dot(velocity, Vector2.UnitX) < 0f)) ? 1 : (-1));
+
+                if (ai[0] >= timeToFlyOut) {
+                    Kill();
+                    return;
+                }
+
+                player.heldProj = whoAmI;
+                player.MatchItemTimeToItemAnimation();
+                ...
+            }
+
+        The player.MatchItemTimeToItemAnimation(); is new too, but it just sets player.itemTime = player.itemAnimation
+
+        - Rijam
+        */
+
+        public override void Load() {
+            base.Load();
+            // Âà§Êñ≠‰ª£Á†ÅÈÉΩÊòØ‰∏ÄÊ†∑ÁöÑÔºåÁõ¥Êé•Áî®Âêå‰∏Ä‰∏™ILÁºñËæë
+            //Terraria.IL_Projectile.AI_165_Whip += WhipPatch;
+            //Terraria.IL_Projectile.AI_019_Spears += WhipPatch;
+            Terraria.On_Projectile.AI_165_Whip += Projectile_Hook_AI_165_Whip;
+        }
+
+        private delegate void orig_Projectile_AI_165_Whip(Projectile self);
+
+        private static void Projectile_Hook_AI_165_Whip(On_Projectile.orig_AI_165_Whip orig, Projectile self)
+        {
+            if (Main.player[self.owner].itemAnimation == 1)
+            {
+                Main.player[self.owner].itemAnimation = 0;
+            }
+            orig(self);
+        }
+
+        // Unused now:
+
+        // tMLÂ§ßÊ¶ÇÊòØitemAnimation‰∏∫0Âíå1Êó∂ÂêÑÂà§Êñ≠‰∫Ü‰∏ÄÊ¨°Âá∫ÊâãÔºå‰∏¢‰∫Ü‰∏§‰∏™Èû≠Â≠êÔºåÂàöÂ•Ω‰ΩøËøêË°åÂà∞SmartSelectLookupÁöÑÊó∂ÂÄôÊ≤°ÊúâitemAnimation‰∏∫0ÁöÑÁ©∫Êå°Êúü‰∫ÜÔºåÂàáÈû≠‰πü‰∏çËÉΩÁî®‰∫Ü
         private void WhipPatch(ILContext il) {
             var c = new ILCursor(il);
             c.GotoNext(MoveType.After, i => i.MatchLdloc(0));
@@ -23,7 +89,7 @@ namespace WhipFix
             c.Emit(OpCodes.Ldloc_0);
             c.EmitDelegate<Func<int, Player, int>>((returnValue, player) => {
                 if (returnValue == 1) {
-                    player.itemAnimation = 0; // …ËŒ™0≤≈ª·‘⁄SmartSelectLookup¿Ô«–ªªselectedItem
+                    player.itemAnimation = 0; // ËÆæ‰∏∫0Êâç‰ºöÂú®SmartSelectLookupÈáåÂàáÊç¢selectedItem
                     return 0;
                 }
                 return returnValue;
